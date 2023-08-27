@@ -36,6 +36,13 @@ export enum TokenType {
 
 export interface JwtType {
   payload: string | Buffer | object
-  privateKey?: string
+  privateKey: string
   options?: SignOptions
+}
+
+export interface RefreshTokenType {
+  _id?: ObjectId
+  token: string
+  created_at?: Date
+  user_id: ObjectId
 }

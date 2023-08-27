@@ -8,7 +8,7 @@ const port = 4000
 dbService.connect()
 
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).json('ExpressJS Server On')
+  res.json('ExpressJS Server On')
 })
 
 app.use(express.json())
