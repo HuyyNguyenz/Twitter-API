@@ -46,3 +46,10 @@ export interface RefreshTokenType {
   created_at?: Date
   user_id: ObjectId
 }
+
+export interface FollowerType {
+  _id?: ObjectId
+  followed_user_id: ObjectId
+  user_id: ObjectId
+  created_at?: Date
+}
