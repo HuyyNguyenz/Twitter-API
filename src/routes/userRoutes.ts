@@ -38,99 +38,99 @@ import wrapRequestHandler from '~/utils/handlers'
 const userRouter = Router()
 /**
  * Description: Login user
- * Path: /user/login
+ * Path: /login
  * Method: POST
  * Body: { email: string, password:string }
  */
-userRouter.post('/user/login', loginValidator, wrapRequestHandler(loginController))
+userRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 
 /**
  * Description: Login user with google
- * Path: /user/oauth/google
+ * Path: /oauth/google
  * Method: POST
  * Body: { email: string, password:string }
  */
-userRouter.get('/user/oauth/google', wrapRequestHandler(oauthController))
+userRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 
 /**
  * Description: Register account for a new user
- * Path: /user/register
+ * Path: /register
  * Method: POST
  * Body: { name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601 }
  */
-userRouter.post('/user/register', registerValidator, wrapRequestHandler(registerController))
+userRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 /**
  * Description: Logout a user
- * Path: /user/logout
+ * Path: /logout
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
  * Body: { refresh_token: string }
  */
-userRouter.post('/user/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
+userRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 
 /**
  * Description: Verify email when user client click on the link in email
- * Path: /user/verify-email
+ * Path: /verify-email
  * Method: POST
  * Body: { email_verify_token: string }
  */
-userRouter.post('/user/verify-email', verifyEmailTokenValidator, wrapRequestHandler(verifyEmailController))
+userRouter.post('/verify-email', verifyEmailTokenValidator, wrapRequestHandler(verifyEmailController))
 
 /**
  * Description: Resend email when user sign in and click button resend email
- * Path: /user/resend-verify-email
+ * Path: /resend-verify-email
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
  * Body: {}
  */
-userRouter.post('/user/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
+userRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
 
 /**
  * Description: Submit email to reset password, send email to user
- * Path: /user/forgot-password
+ * Path: /forgot-password
  * Method: POST
  * Body: { email: string }
  */
-userRouter.post('/user/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
+userRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
 
 /**
  * Description: Verify link in email to reset password
- * Path: /user/verify-forgot-password
+ * Path: /verify-forgot-password
  * Method: POST
  * Body: { forgot_password_token:string }
  */
 userRouter.post(
-  '/user/verify-forgot-password',
+  '/verify-forgot-password',
   verifyForgotPasswordTokenValidator,
   wrapRequestHandler(verifyForgotPasswordController)
 )
 
 /**
  * Description: Reset password
- * Path: /user/reset-password
+ * Path: /reset-password
  * Method: POST
  * Body: { forgot_password_token:string, password:string, confirm_password:string }
  */
-userRouter.post('/user/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+userRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
 
 /**
  * Description: Get my profile
- * Path: /user/me
+ * Path: /me
  * Method: GET
  * Header: { Authorization: Bearer <access_token> }
  */
-userRouter.get('/user/me', accessTokenValidator, wrapRequestHandler(getMeController))
+userRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 
 /**
  * Description: Update my profile
- * Path: /user/me
+ * Path: /me
  * Method: PATCH
  * Header: { Authorization: Bearer <access_token> }
  * Body: UserSchema
  */
 userRouter.patch(
-  '/user/me',
+  '/me',
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
@@ -149,20 +149,20 @@ userRouter.patch(
 
 /**
  * Description: Get user profile
- * Path: /user/:username
+ * Path: /:username
  * Method: GET
  */
-userRouter.get('/user/:username', wrapRequestHandler(getProfileController))
+userRouter.get('/:username', wrapRequestHandler(getProfileController))
 
 /**
  * Description: Follow user
- * Path: /user/follow
+ * Path: /follow
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
  * Body: { followed_user_id: string }
  */
 userRouter.post(
-  '/user/follow',
+  '/follow',
   accessTokenValidator,
   verifiedUserValidator,
   followValidator,
@@ -171,12 +171,12 @@ userRouter.post(
 
 /**
  * Description: Unfollow user
- * Path: /user/follow/:user_id
+ * Path: /follow/:user_id
  * Method: DELETE
  * Header: { Authorization: Bearer <access_token> }
  */
 userRouter.delete(
-  '/user/follow/:user_id',
+  '/follow/:user_id',
   accessTokenValidator,
   verifiedUserValidator,
   unFollowValidator,
@@ -185,13 +185,13 @@ userRouter.delete(
 
 /**
  * Description: Change password
- * Path: /user/change-password
+ * Path: /change-password
  * Method: PUT
  * Header: { Authorization: Bearer <access_token> }
  * Body: { old_password:string, password:string, confirm_password:string }
  */
 userRouter.put(
-  '/user/change-password',
+  '/change-password',
   accessTokenValidator,
   verifiedUserValidator,
   changePasswordValidator,
