@@ -53,3 +53,13 @@ export interface FollowerType {
   user_id: ObjectId
   created_at?: Date
 }
+
+export enum MediaType {
+  Image,
+  Video
+}
+
+export interface Media {
+  url: string
+  type: MediaType
+}

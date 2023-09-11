@@ -8,6 +8,7 @@ import {
   GetProfileReqParams,
   LoginReqBody,
   LogoutReqBody,
+  RefreshTokenReqBody,
   RegisterReqBody,
   ResetPasswordReqBody,
   TokenPayload,
@@ -156,5 +157,15 @@ export const changePasswordController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const { password } = req.body
   const result = await userService.changePassword(user_id, password)
+  return res.json(result)
+}
+
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response
+) => {
+  const { refresh_token } = req.body
+  const { user_id, verify } = req.decoded_refresh_token as TokenPayload
+  const result = await userService.refreshToken({ refresh_token, user_id, verify })
   return res.json(result)
 }

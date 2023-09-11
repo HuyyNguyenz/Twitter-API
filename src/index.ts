@@ -5,7 +5,7 @@ import { defaultErrorHandler } from './middlewares/errorMiddlewares'
 import mediaRouter from './routes/mediaRoutes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
 
 config()
@@ -24,7 +24,7 @@ app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/media', mediaRouter)
 app.use('/static', staticRouter)
-// app.use('/static', express.static(UPLOAD_DIR))
+app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
