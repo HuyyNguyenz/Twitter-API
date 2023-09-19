@@ -3,7 +3,7 @@ import path from 'path'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/messages'
-import { StaticReqParams } from '~/requestTypes'
+import { StaticM3u8ReqParams, StaticReqParams, StaticSegmentReqParams } from '~/requestTypes'
 import mediaService from '~/services/mediaServices'
 import fs from 'fs'
 import mime from 'mime'
@@ -89,4 +89,30 @@ export const serveVideoStreamController = (req: Request, res: Response) => {
   res.writeHead(HTTP_STATUS.PARTIAL_CONTENT, headers)
   const videoSteams = fs.createReadStream(videoPath, { start, end })
   videoSteams.pipe(res)
+}
+
+export const serveM3u8Controller = (req: Request<StaticM3u8ReqParams>, res: Response) => {
+  const { id } = req.params
+  return res.sendFile(path.resolve(UPLOAD_VIDEO_DIR, id, 'master.m3u8'), (err: any) => {
+    if (err) {
+      res.status(err.status).send('Not found')
+    }
+  })
+}
+
+export const serveSegmentController = (req: Request<StaticSegmentReqParams>, res: Response) => {
+  const { id, v, segment } = req.params
+  return res.sendFile(path.resolve(UPLOAD_VIDEO_DIR, id, v, segment), (err: any) => {
+    if (err) {
+      res.status(err.status).send('Not found')
+    }
+  })
+}
+
+export const uploadVideoHLSController = async (req: Request, res: Response) => {
+  const url = await mediaService.uploadVideoHLS(req)
+  return res.json({
+    message: USER_MESSAGES.UPLOAD_SUCCESS,
+    result: url
+  })
 }

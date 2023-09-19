@@ -56,10 +56,27 @@ export interface FollowerType {
 
 export enum MediaType {
   Image,
-  Video
+  Video,
+  HLS
 }
 
 export interface Media {
   url: string
   type: MediaType
+}
+
+export interface VideoStatusType {
+  _id?: ObjectId
+  name: string
+  status: VideoEncodingStatus
+  message?: string
+  created_at?: Date
+  updated_at?: Date
+}
+
+export enum VideoEncodingStatus {
+  Failed,
+  Pending,
+  Processing,
+  Success
 }

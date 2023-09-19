@@ -79,3 +79,13 @@ export interface ChangePasswordReqBody {
 export interface StaticReqParams extends ParamsDictionary {
   name: string
 }
+
+export interface StaticM3u8ReqParams extends ParamsDictionary {
+  id: string
+}
+
+export interface StaticSegmentReqParams extends ParamsDictionary {
+  id: string
+  v: string
+  segment: string
+}

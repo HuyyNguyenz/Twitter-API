@@ -7,6 +7,7 @@ import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import { getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import fs from 'fs'
 import { Media, MediaType } from '~/types'
+import queue from '~/utils/queue'
 
 config()
 class MediaService {
@@ -20,8 +21,8 @@ class MediaService {
         fs.unlinkSync(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/image/${newName}.jpg`
-            : `http://localhost:${process.env.PORT}/static/image/${newName}.jpg`,
+            ? `${process.env.HOST}/api/static/image/${newName}.jpg`
+            : `http://localhost:${process.env.PORT}/api/static/image/${newName}.jpg`,
           type: MediaType.Image
         }
       })
@@ -33,11 +34,27 @@ class MediaService {
     const result: Media[] = files.map((file) => {
       return {
         url: isProduction
-          ? `${process.env.HOST}/static/video/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
+          ? `${process.env.HOST}/api/static/video/${file.newFilename}`
+          : `http://localhost:${process.env.PORT}/api/static/video/${file.newFilename}`,
         type: MediaType.Video
       }
     })
+    return result
+  }
+  uploadVideoHLS = async (req: Request) => {
+    const files = await handleUploadVideo(req)
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const newName = getNameFromFullName(file.newFilename)
+        queue.enqueue(file.filepath)
+        return {
+          url: isProduction
+            ? `${process.env.HOST}/api/static/video-hls/${newName}/master.m3u8`
+            : `http://localhost:${process.env.PORT}/api/static/video-hls/${newName}/master.m3u8`,
+          type: MediaType.HLS
+        }
+      })
+    )
     return result
   }
 }

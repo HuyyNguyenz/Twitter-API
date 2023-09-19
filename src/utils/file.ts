@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import { File } from 'formidable'
 import fs from 'fs'
+import path from 'path'
 import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
 
 export const initFolder = () => {
@@ -42,8 +43,12 @@ export const handleUploadImage = async (req: Request) => {
 
 export const handleUploadVideo = async (req: Request) => {
   const formidable = (await import('formidable')).default
+  const nanoid = (await import('nanoid')).nanoid
+  const idName = nanoid()
+  const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
+  fs.mkdirSync(folderPath)
   const form = formidable({
-    uploadDir: UPLOAD_VIDEO_DIR,
+    uploadDir: folderPath,
     maxFiles: 1,
     maxFileSize: 50 * 1024 * 1024, //50mb
     filter: ({ name, originalFilename, mimetype }) => {
@@ -52,6 +57,9 @@ export const handleUploadVideo = async (req: Request) => {
         form.emit('error' as any, { message: 'File type is not valid' } as any)
       }
       return isValid
+    },
+    filename: () => {
+      return idName
     }
   })
   return new Promise<File[]>((resolve, reject) => {

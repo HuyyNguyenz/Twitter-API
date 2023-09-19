@@ -7,6 +7,7 @@ import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
+import cors from 'cors'
 
 config()
 initFolder()
@@ -19,12 +20,13 @@ app.get('/', (req: Request, res: Response) => {
   res.json('ExpressJS Server On')
 })
 
+app.use(cors())
 app.use(express.json())
 
 app.use('/api/user', userRouter)
 app.use('/api/media', mediaRouter)
-app.use('/static', staticRouter)
-app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
+app.use('/api/static', staticRouter)
+app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
