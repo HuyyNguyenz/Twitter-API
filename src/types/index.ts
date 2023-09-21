@@ -1,5 +1,6 @@
 import { SignOptions } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
+import { ParamsDictionary, Query } from 'express-serve-static-core'
 
 export enum UserVerifyStatus {
   Unverified, // chưa xác thực email, mặc định = 0
@@ -45,6 +46,8 @@ export interface RefreshTokenType {
   token: string
   created_at?: Date
   user_id: ObjectId
+  iat: number
+  exp: number
 }
 
 export interface FollowerType {
@@ -79,4 +82,45 @@ export enum VideoEncodingStatus {
   Pending,
   Processing,
   Success
+}
+
+export interface TweetConstructor {
+  _id?: ObjectId
+  user_id: ObjectId
+  type: TweetType
+  audience: TweetAudience
+  content: string
+  parent_id: null | string //  chỉ null khi tweet gốc
+  hashtags: ObjectId[]
+  mentions: string[]
+  medias: Media[]
+  guest_views?: number
+  user_views?: number
+  created_at?: Date
+  updated_at?: Date
+}
+
+export enum TweetType {
+  Tweet,
+  Retweet,
+  Comment,
+  QuoteTweet
+}
+
+export enum TweetAudience {
+  Everyone, // 0
+  TwitterCircle // 1
+}
+
+export interface TweetParam extends ParamsDictionary {
+  tweet_id: string
+}
+
+export interface TweetQuery extends Pagination, Query {
+  tweet_type: string
+}
+
+export interface Pagination {
+  limit: string
+  page: string
 }

@@ -8,13 +8,19 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
 import cors from 'cors'
+import { MongoClient } from 'mongodb'
 
 config()
 initFolder()
 
 const app = express()
 const port = process.env.PORT || 4000
-dbService.connect()
+dbService.connect().then(() => {
+  dbService.indexUsers()
+  dbService.indexRefreshTokens()
+  dbService.indexVideoStatus()
+  dbService.indexFollowers()
+})
 
 app.get('/', (req: Request, res: Response) => {
   res.json('ExpressJS Server On')

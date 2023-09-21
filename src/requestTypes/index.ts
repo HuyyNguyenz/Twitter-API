@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { TokenType, UserVerifyStatus } from '~/types'
+import { Media, TokenType, TweetAudience, TweetType, UserVerifyStatus } from '~/types'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export interface LoginReqBody {
@@ -27,6 +27,8 @@ export interface TokenPayload extends JwtPayload {
   user_id: string
   verify: UserVerifyStatus
   token_type: TokenType
+  iat: number
+  exp: number
 }
 
 export interface VerifyEmailReqBody {
@@ -88,4 +90,14 @@ export interface StaticSegmentReqParams extends ParamsDictionary {
   id: string
   v: string
   segment: string
+}
+
+export interface TweetRequestBody {
+  type: TweetType
+  audience: TweetAudience
+  content: string
+  parent_id: null | string //  chỉ null khi tweet gốc, không thì là tweet_id cha dạng string
+  hashtags: string[] // tên của hashtag dạng ['javascript', 'reactjs']
+  mentions: string[] // user_id[]
+  medias: Media[]
 }

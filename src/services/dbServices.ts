@@ -24,6 +24,33 @@ class DbService {
       console.log('Connected failed', error)
     }
   }
+  indexUsers = async () => {
+    const indexExists = await this.users().indexExists(['email_1_password_1', 'email_1', 'username_1'])
+    if (!indexExists) {
+      this.users().createIndex({ email: 1, password: 1 })
+      this.users().createIndex({ email: 1 }, { unique: true })
+      this.users().createIndex({ username: 1 }, { unique: true })
+    }
+  }
+  indexRefreshTokens = async () => {
+    const indexExists = await this.refreshTokens().indexExists(['exp_1', 'token_1'])
+    if (!indexExists) {
+      this.refreshTokens().createIndex({ token: 1 })
+      this.refreshTokens().createIndex({ exp: 1 }, { expireAfterSeconds: 0 })
+    }
+  }
+  indexVideoStatus = async () => {
+    const indexExists = await this.videoStatus().indexExists(['name_1'])
+    if (!indexExists) {
+      this.videoStatus().createIndex({ name: 1 })
+    }
+  }
+  indexFollowers = async () => {
+    const indexExists = await this.followers().indexExists(['user_id_1_followed_user_id_1'])
+    if (!indexExists) {
+      this.followers().createIndex({ user_id: 1, followed_user_id: 1 })
+    }
+  }
   users = (): Collection<User> => {
     return this.db.collection('users')
   }
