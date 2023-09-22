@@ -4,6 +4,7 @@ import { config } from 'dotenv'
 import RefreshToken from '~/models/schemas/RefreshTokenSchema'
 import Follower from '~/models/schemas/FollowerSchema'
 import VideoStatus from '~/models/schemas/VideoStatusSchema'
+import Tweet from '~/models/schemas/TweetSchema'
 
 config()
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@twitter.hx0adbn.mongodb.net/?retryWrites=true&w=majority`
@@ -62,6 +63,9 @@ class DbService {
   }
   videoStatus = (): Collection<VideoStatus> => {
     return this.db.collection('video_status')
+  }
+  tweets = (): Collection<Tweet> => {
+    return this.db.collection('tweets')
   }
 }
 const dbService = new DbService()

@@ -9,6 +9,7 @@ import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
+import tweetRouter from './routes/tweetRoutes'
 
 config()
 initFolder()
@@ -31,6 +32,7 @@ app.use(express.json())
 
 app.use('/api/user', userRouter)
 app.use('/api/media', mediaRouter)
+app.use('/api/tweet', tweetRouter)
 app.use('/api/static', staticRouter)
 app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
