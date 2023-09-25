@@ -101,3 +101,11 @@ export interface TweetRequestBody {
   mentions: string[] // user_id[]
   medias: Media[]
 }
+
+export interface BookmarkRequestBody {
+  tweet_id: string
+}
+
+export interface TweetRequestParams extends ParamsDictionary {
+  tweet_id: string
+}

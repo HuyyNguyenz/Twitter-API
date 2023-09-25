@@ -19,7 +19,7 @@ export interface UserType {
   email_verify_token?: string // jwt hoặc '' nếu đã xác thực email
   forgot_password_token?: string // jwt hoặc '' nếu đã xác thực email
   verify?: UserVerifyStatus
-
+  twitter_circle?: ObjectId[]
   bio?: string // optional
   location?: string // optional
   website?: string // optional
@@ -123,4 +123,17 @@ export interface TweetQuery extends Pagination, Query {
 export interface Pagination {
   limit: string
   page: string
+}
+
+export interface HashtagType {
+  _id?: ObjectId
+  name: string
+  created_at?: Date
+}
+
+export interface BookmarkType {
+  _id?: ObjectId
+  user_id: ObjectId
+  tweet_id: ObjectId
+  created_at?: Date
 }

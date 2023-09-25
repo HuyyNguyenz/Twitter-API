@@ -10,6 +10,7 @@ import staticRouter from './routes/staticRoutes'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import tweetRouter from './routes/tweetRoutes'
+import bookmarkRouter from './routes/bookmarkRoutes'
 
 config()
 initFolder()
@@ -33,6 +34,7 @@ app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/media', mediaRouter)
 app.use('/api/tweet', tweetRouter)
+app.use('/api/bookmark', bookmarkRouter)
 app.use('/api/static', staticRouter)
 app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
