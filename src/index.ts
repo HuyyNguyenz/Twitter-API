@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express, { Request, Response } from 'express'
 import userRouter from './routes/userRoutes'
 import dbService from './services/dbServices'
 import { defaultErrorHandler } from './middlewares/errorMiddlewares'
@@ -8,7 +8,6 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
 import cors from 'cors'
-import { MongoClient } from 'mongodb'
 import tweetRouter from './routes/tweetRoutes'
 import bookmarkRouter from './routes/bookmarkRoutes'
 
