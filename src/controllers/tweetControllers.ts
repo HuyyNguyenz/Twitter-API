@@ -2,8 +2,9 @@ import { Request, Response } from 'express'
 import Tweet from '~/models/schemas/TweetSchema'
 import { TokenPayload, TweetRequestParams } from '~/requestTypes'
 import tweetService from '~/services/tweetServices'
-import { Pagination, TweetQuery, TweetType } from '~/types'
+import { Pagination, TweetQuery } from '~/requestTypes'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { TweetType } from '~/types'
 
 export const createTweetController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload

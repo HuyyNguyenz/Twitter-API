@@ -1,6 +1,5 @@
 import { SignOptions } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
-import { ParamsDictionary, Query } from 'express-serve-static-core'
 
 export enum UserVerifyStatus {
   Unverified, // chưa xác thực email, mặc định = 0
@@ -110,19 +109,6 @@ export enum TweetType {
 export enum TweetAudience {
   Everyone, // 0
   TwitterCircle // 1
-}
-
-export interface TweetParam extends ParamsDictionary {
-  tweet_id: string
-}
-
-export interface Pagination {
-  limit: string
-  page: string
-}
-
-export interface TweetQuery extends Pagination, Query {
-  tweet_type: string
 }
 
 export interface HashtagType {

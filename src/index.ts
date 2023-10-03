@@ -10,6 +10,7 @@ import staticRouter from './routes/staticRoutes'
 import cors from 'cors'
 import tweetRouter from './routes/tweetRoutes'
 import bookmarkRouter from './routes/bookmarkRoutes'
+import searchRouter from './routes/searchRoutes'
 
 config()
 initFolder()
@@ -34,6 +35,7 @@ app.use('/api/user', userRouter)
 app.use('/api/media', mediaRouter)
 app.use('/api/tweet', tweetRouter)
 app.use('/api/bookmark', bookmarkRouter)
+app.use('/api/search', searchRouter)
 app.use('/api/static', staticRouter)
 app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 

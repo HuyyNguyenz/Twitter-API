@@ -1,6 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { Media, TokenType, TweetAudience, TweetType, UserVerifyStatus } from '~/types'
-import { ParamsDictionary } from 'express-serve-static-core'
+import { ParamsDictionary, Query } from 'express-serve-static-core'
 
 export interface LoginReqBody {
   email: string
@@ -108,4 +108,17 @@ export interface BookmarkRequestBody {
 
 export interface TweetRequestParams extends ParamsDictionary {
   tweet_id: string
+}
+
+export interface Pagination {
+  limit: string
+  page: string
+}
+
+export interface TweetQuery extends Pagination, Query {
+  tweet_type: string
+}
+
+export interface SearchQuery extends Pagination {
+  content: string
 }
