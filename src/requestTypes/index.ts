@@ -119,6 +119,18 @@ export interface TweetQuery extends Pagination, Query {
   tweet_type: string
 }
 
-export interface SearchQuery extends Pagination {
+export interface SearchQuery extends Pagination, Query {
   content: string
+  media_type: MediaTypeQuery
+  people_follow: PeopleFollow
+}
+
+export enum MediaTypeQuery {
+  Image = 'image',
+  Video = 'video'
+}
+
+export enum PeopleFollow {
+  Anyone = '0',
+  Following = '1'
 }

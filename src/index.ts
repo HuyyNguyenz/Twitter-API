@@ -22,6 +22,7 @@ dbService.connect().then(() => {
   dbService.indexRefreshTokens()
   dbService.indexVideoStatus()
   dbService.indexFollowers()
+  dbService.indexTweets()
 })
 
 app.get('/', (req: Request, res: Response) => {

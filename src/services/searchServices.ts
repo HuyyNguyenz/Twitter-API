@@ -1,30 +1,67 @@
 import { ObjectId } from 'mongodb'
 import dbService from './dbServices'
-import { TweetAudience, TweetType } from '~/types'
+import { MediaType, TweetAudience, TweetType } from '~/types'
 import Tweet from '~/models/schemas/TweetSchema'
+import { MediaTypeQuery, PeopleFollow } from '~/requestTypes'
 
 class SearchService {
   search = async ({
     content,
     limit,
     page,
-    user_id
+    user_id,
+    media_type,
+    people_follow
   }: {
     content: string
     limit: number
     page: number
     user_id: string
+    media_type?: MediaTypeQuery
+    people_follow?: PeopleFollow
   }) => {
+    const $match: any = {
+      $text: {
+        $search: content
+      }
+    }
+    if (media_type) {
+      if (media_type === MediaTypeQuery.Image) {
+        $match['medias.type'] = MediaType.Image
+      }
+      if (media_type === MediaTypeQuery.Video) {
+        $match['medias.type'] = {
+          $in: [MediaType.Video, MediaType.HLS]
+        }
+      }
+    }
+    if (people_follow && people_follow === PeopleFollow.Following) {
+      const user_id_obj = new ObjectId(user_id)
+      const followed_user_ids = await dbService
+        .followers()
+        .find(
+          {
+            user_id: user_id_obj
+          },
+          {
+            projection: {
+              followed_user_id: 1
+            }
+          }
+        )
+        .toArray()
+      const ids = followed_user_ids.map((item) => item.followed_user_id)
+      ids.push(user_id_obj)
+      $match['user_id'] = {
+        $in: ids
+      }
+    }
     const [tweets, total] = await Promise.all([
       dbService
         .tweets()
         .aggregate<Tweet>([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match
           },
           {
             $lookup: {
@@ -174,11 +211,7 @@ class SearchService {
         .tweets()
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match
           },
           {
             $lookup: {

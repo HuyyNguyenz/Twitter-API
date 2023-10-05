@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { searchController } from '~/controllers/searchControllers'
+import { searchValidator } from '~/middlewares/searchMiddlewares'
 import { paginationValidator } from '~/middlewares/tweetMiddlewares'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/userMiddlewares'
-import wrapRequestHandler from '~/utils/handlers'
 
 const searchRouter = Router()
 
@@ -11,7 +11,8 @@ searchRouter.get(
   accessTokenValidator,
   verifiedUserValidator,
   paginationValidator,
-  wrapRequestHandler(searchController)
+  searchValidator,
+  searchController
 )
 
 export default searchRouter
