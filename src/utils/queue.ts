@@ -1,9 +1,14 @@
 import dbService from '~/services/dbServices'
-import { getNameFromFullName } from './file'
+import { getFiles, getNameFromFullName } from './file'
 import { encodeHLSWithMultipleVideoStreams } from './video'
 import fsPromise from 'fs/promises'
+import { rimrafSync } from 'rimraf'
 import VideoStatus from '~/models/schemas/VideoStatusSchema'
 import { VideoEncodingStatus } from '~/types'
+import path from 'path'
+import { UPLOAD_VIDEO_DIR } from '~/constants/dir'
+import { uploadFileToS3 } from './s3'
+import mime from 'mime'
 
 class Queue {
   items: string[]
@@ -14,7 +19,7 @@ class Queue {
   }
   enqueue = async (item: string) => {
     this.items.push(item)
-    const idName = getNameFromFullName(item.split('/').pop() as string)
+    const idName = getNameFromFullName(item.split('\\').pop() as string)
     await dbService.videoStatus().insertOne(new VideoStatus({ name: idName, status: VideoEncodingStatus.Pending }))
     this.processEncode()
   }
@@ -23,7 +28,7 @@ class Queue {
     if (this.items.length > 0) {
       this.encoding = true
       const videoPath = this.items[0]
-      const idName = getNameFromFullName(videoPath.split('/').pop() as string)
+      const idName = getNameFromFullName(videoPath.split('\\').pop() as string)
       await dbService.videoStatus().updateOne(
         {
           name: idName
@@ -40,7 +45,18 @@ class Queue {
       try {
         await encodeHLSWithMultipleVideoStreams(videoPath)
         this.items.shift()
-        await fsPromise.unlink(videoPath)
+        const files = getFiles(path.resolve(UPLOAD_VIDEO_DIR, idName))
+        await Promise.all(
+          files.map((filePath) => {
+            const fileName = 'videos-hls' + filePath.replace(path.resolve(UPLOAD_VIDEO_DIR), '').replace('\\', '/')
+            return uploadFileToS3({
+              filePath,
+              fileName,
+              contentType: mime.getType(filePath) as string
+            })
+          })
+        )
+        rimrafSync(path.resolve(UPLOAD_VIDEO_DIR, idName))
         await dbService.videoStatus().updateOne(
           {
             name: idName
