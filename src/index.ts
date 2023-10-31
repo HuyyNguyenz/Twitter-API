@@ -11,11 +11,14 @@ import cors from 'cors'
 import tweetRouter from './routes/tweetRoutes'
 import bookmarkRouter from './routes/bookmarkRoutes'
 import searchRouter from './routes/searchRoutes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 
 config()
 initFolder()
 
 const app = express()
+const httpServer = createServer(app)
 const port = process.env.PORT || 4000
 dbService.connect().then(() => {
   dbService.indexUsers()
@@ -42,4 +45,19 @@ app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
-app.listen(port, () => console.log(`Server is running at http://localhost:${port}/`))
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL as string
+  }
+})
+
+io.on('connection', (socket) => {
+  console.log(`user ${socket.id} connected`)
+  socket.on('disconnect', () => {
+    console.log(`user ${socket.id} disconnected`)
+  })
+  socket.on('hello', (data) => console.log(data))
+  socket.emit('hi', { message: `Hi user ${socket.id}` })
+})
+
+httpServer.listen(port, () => console.log(`Server is running at http://localhost:${port}/`))
