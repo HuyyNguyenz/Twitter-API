@@ -51,13 +51,22 @@ const io = new Server(httpServer, {
   }
 })
 
+const users: { [key: string]: { socket_id: string } } = {}
+
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
-  socket.on('disconnect', () => {
-    console.log(`user ${socket.id} disconnected`)
+  const user_id = socket.handshake.auth._id as string
+  users[user_id] = { socket_id: socket.id }
+  console.log(users)
+  socket.on('private message', (data) => {
+    const receive_socket_id = users[data.to].socket_id
+    socket.to(receive_socket_id).emit('receive private message', data)
   })
-  socket.on('hello', (data) => console.log(data))
-  socket.emit('hi', { message: `Hi user ${socket.id}` })
+  socket.on('disconnect', () => {
+    delete users[user_id]
+    console.log(`user ${socket.id} disconnected`)
+    console.log(users)
+  })
 })
 
 httpServer.listen(port, () => console.log(`Server is running at http://localhost:${port}/`))
