@@ -7,6 +7,7 @@ import VideoStatus from '~/models/schemas/VideoStatusSchema'
 import Tweet from '~/models/schemas/TweetSchema'
 import Hashtag from '~/models/schemas/HashtagSchema'
 import Bookmark from '~/models/schemas/BookmarkSchema'
+import Conversation from '~/models/schemas/ConversationSchema'
 
 config()
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@twitter.hx0adbn.mongodb.net/?retryWrites=true&w=majority`
@@ -80,6 +81,9 @@ class DbService {
   }
   bookmarks = (): Collection<Bookmark> => {
     return this.db.collection('bookmarks')
+  }
+  conversations = (): Collection<Conversation> => {
+    return this.db.collection('conversations')
   }
 }
 const dbService = new DbService()

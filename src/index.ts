@@ -13,6 +13,7 @@ import bookmarkRouter from './routes/bookmarkRoutes'
 import searchRouter from './routes/searchRoutes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import Conversation from './models/schemas/ConversationSchema'
 
 config()
 initFolder()
@@ -57,15 +58,17 @@ io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
   const user_id = socket.handshake.auth._id as string
   users[user_id] = { socket_id: socket.id }
-  console.log(users)
-  socket.on('private message', (data) => {
-    const receive_socket_id = users[data.to].socket_id
+  socket.on('private message', async (data) => {
+    const receive_socket_id = users[data.to]?.socket_id
+    if (!receive_socket_id) return
+    await dbService
+      .conversations()
+      .insertOne(new Conversation({ sender_id: data.from, receiver_id: data.to, content: data.content }))
     socket.to(receive_socket_id).emit('receive private message', data)
   })
   socket.on('disconnect', () => {
     delete users[user_id]
     console.log(`user ${socket.id} disconnected`)
-    console.log(users)
   })
 })
 
