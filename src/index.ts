@@ -14,6 +14,8 @@ import searchRouter from './routes/searchRoutes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import Conversation from './models/schemas/ConversationSchema'
+import conversationRouter from './routes/conversationRoutes'
+import { ObjectId } from 'mongodb'
 
 config()
 initFolder()
@@ -41,6 +43,7 @@ app.use('/api/media', mediaRouter)
 app.use('/api/tweet', tweetRouter)
 app.use('/api/bookmark', bookmarkRouter)
 app.use('/api/search', searchRouter)
+app.use('/api/conversation', conversationRouter)
 app.use('/api/static', staticRouter)
 app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
@@ -58,13 +61,17 @@ io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
   const user_id = socket.handshake.auth._id as string
   users[user_id] = { socket_id: socket.id }
-  socket.on('private message', async (data) => {
+  socket.on('send_message', async (data) => {
     const receive_socket_id = users[data.to]?.socket_id
+    const conversation = new Conversation({
+      sender_id: new ObjectId(data.from),
+      receiver_id: new ObjectId(data.to),
+      content: data.content
+    })
     if (!receive_socket_id) return
-    await dbService
-      .conversations()
-      .insertOne(new Conversation({ sender_id: data.from, receiver_id: data.to, content: data.content }))
-    socket.to(receive_socket_id).emit('receive private message', data)
+    const { insertedId } = await dbService.conversations().insertOne(conversation)
+    conversation._id = insertedId
+    socket.to(receive_socket_id).emit('receive_message', conversation)
   })
   socket.on('disconnect', () => {
     delete users[user_id]
