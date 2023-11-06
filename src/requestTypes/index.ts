@@ -134,3 +134,7 @@ export enum PeopleFollow {
   Anyone = '0',
   Following = '1'
 }
+
+export interface ConversationsReqParam extends ParamsDictionary {
+  receiver_id: string
+}

@@ -158,7 +158,7 @@ const imageSchema: ParamSchema = {
   }
 }
 
-const userIdSchema: ParamSchema = {
+export const userIdSchema: ParamSchema = {
   custom: {
     options: async (value: string, { req }) => {
       if (!ObjectId.isValid(value)) {
