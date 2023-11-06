@@ -11,11 +11,9 @@ import cors from 'cors'
 import tweetRouter from './routes/tweetRoutes'
 import bookmarkRouter from './routes/bookmarkRoutes'
 import searchRouter from './routes/searchRoutes'
-import { createServer } from 'http'
-import { Server } from 'socket.io'
-import Conversation from './models/schemas/ConversationSchema'
 import conversationRouter from './routes/conversationRoutes'
-import { ObjectId } from 'mongodb'
+import { createServer } from 'http'
+import initialSocket from './utils/socket'
 
 config()
 initFolder()
@@ -49,34 +47,6 @@ app.use('/api/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL as string
-  }
-})
-
-const users: { [key: string]: { socket_id: string } } = {}
-
-io.on('connection', (socket) => {
-  console.log(`user ${socket.id} connected`)
-  const user_id = socket.handshake.auth._id as string
-  users[user_id] = { socket_id: socket.id }
-  socket.on('send_message', async (data) => {
-    const receive_socket_id = users[data.to]?.socket_id
-    const conversation = new Conversation({
-      sender_id: new ObjectId(data.from),
-      receiver_id: new ObjectId(data.to),
-      content: data.content
-    })
-    if (!receive_socket_id) return
-    const { insertedId } = await dbService.conversations().insertOne(conversation)
-    conversation._id = insertedId
-    socket.to(receive_socket_id).emit('receive_message', conversation)
-  })
-  socket.on('disconnect', () => {
-    delete users[user_id]
-    console.log(`user ${socket.id} disconnected`)
-  })
-})
+initialSocket(httpServer)
 
 httpServer.listen(port, () => console.log(`Server is running at http://localhost:${port}/`))
