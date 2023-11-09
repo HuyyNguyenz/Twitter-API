@@ -1,13 +1,12 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import userRouter from './routes/userRoutes'
 import dbService from './services/dbServices'
 import { defaultErrorHandler } from './middlewares/errorMiddlewares'
 import mediaRouter from './routes/mediaRoutes'
 import { initFolder } from './utils/file'
-import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/staticRoutes'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import tweetRouter from './routes/tweetRoutes'
 import bookmarkRouter from './routes/bookmarkRoutes'
 import searchRouter from './routes/searchRoutes'
@@ -19,8 +18,9 @@ import swaggerUi from 'swagger-ui-express'
 // import fs from 'fs'
 // import path from 'path'
 import swaggerJsdoc from 'swagger-jsdoc'
+import { ENV_CONFIG, isProduction } from './constants/config'
+import helmet from 'helmet'
 
-config()
 initFolder()
 
 // const file = fs.readFileSync(path.resolve('./twitter-swagger.yaml'), 'utf8')
@@ -39,9 +39,13 @@ const options = {
 
 const openapiSpecification = swaggerJsdoc(options)
 
+const corsOptions: CorsOptions = {
+  origin: isProduction ? ENV_CONFIG.CLIENT_URL : '*'
+}
+
 const app = express()
 const httpServer = createServer(app)
-const port = process.env.PORT || 4000
+const port = ENV_CONFIG.PORT
 dbService.connect().then(() => {
   dbService.indexUsers()
   dbService.indexRefreshTokens()
@@ -50,11 +54,8 @@ dbService.connect().then(() => {
   dbService.indexTweets()
 })
 
-app.get('/', (req: Request, res: Response) => {
-  res.json('ExpressJS Server On')
-})
-
-app.use(cors())
+app.use(helmet())
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))

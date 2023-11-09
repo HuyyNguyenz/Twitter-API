@@ -23,9 +23,7 @@ import { ObjectId } from 'mongodb'
 import dbService from '~/services/dbServices'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/types'
-import { config } from 'dotenv'
-
-config()
+import { ENV_CONFIG } from '~/constants/config'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const user = req.user as User
@@ -38,7 +36,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
 export const oauthController = async (req: Request, res: Response) => {
   const { code } = req.query
   const result = await userService.oauth(code as string)
-  const redirectUri = `${process.env.CLIENT_REDIRECT_URI}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.new_user}&verify=${result.verify}`
+  const redirectUri = `${ENV_CONFIG.CLIENT_REDIRECT_URI}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.new_user}&verify=${result.verify}`
   return res.redirect(redirectUri)
 }
 

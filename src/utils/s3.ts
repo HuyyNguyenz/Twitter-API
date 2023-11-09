@@ -1,16 +1,15 @@
 import { Upload } from '@aws-sdk/lib-storage'
 import { S3 } from '@aws-sdk/client-s3'
-import { config } from 'dotenv'
 import fs from 'fs'
 import { Response } from 'express'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { ENV_CONFIG } from '~/constants/config'
 
-config()
 const s3 = new S3({
-  region: process.env.AWS_REGION as string,
+  region: ENV_CONFIG.AWS_REGION as string,
   credentials: {
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string
+    secretAccessKey: ENV_CONFIG.AWS_SECRET_ACCESS_KEY as string,
+    accessKeyId: ENV_CONFIG.AWS_ACCESS_KEY_ID as string
   }
 })
 // Test connection s3
@@ -27,7 +26,7 @@ export const uploadFileToS3 = ({
   const parallelUploads3 = new Upload({
     client: s3,
     params: {
-      Bucket: process.env.AWS_S3_NAME as string,
+      Bucket: ENV_CONFIG.AWS_S3_NAME as string,
       Key: fileName,
       Body: fs.readFileSync(filePath),
       ContentType: contentType
@@ -46,7 +45,7 @@ export const uploadFileToS3 = ({
 export const sendFileFromS3 = async (res: Response, filePath: string) => {
   try {
     const data = await s3.getObject({
-      Bucket: process.env.AWS_S3_NAME as string,
+      Bucket: ENV_CONFIG.AWS_S3_NAME as string,
       Key: filePath
     })
     ;(data.Body as any).pipe(res)

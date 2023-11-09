@@ -6,15 +6,13 @@ import { signToken, verifyToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/types'
 import RefreshToken from '~/models/schemas/RefreshTokenSchema'
 import { ObjectId } from 'mongodb'
-import { config } from 'dotenv'
 import { USER_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Follower from '~/models/schemas/FollowerSchema'
 import axios from 'axios'
 import { sendForgotPasswordEmail, sendRegisterVerifyEmail } from '~/utils/email'
-
-config()
+import { ENV_CONFIG } from '~/constants/config'
 class UserService {
   private signAccessToken = ({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) => {
     return signToken({
@@ -23,9 +21,9 @@ class UserService {
         verify,
         token_type: TokenType.AccessToken
       },
-      privateKey: process.env.SECRET_JWT_ACCESS_TOKEN as string,
+      privateKey: ENV_CONFIG.SECRET_JWT_ACCESS_TOKEN as string,
       options: {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN
+        expiresIn: ENV_CONFIG.ACCESS_TOKEN_EXPIRE_IN
       }
     })
   }
@@ -46,7 +44,7 @@ class UserService {
           token_type: TokenType.RefreshToken,
           exp
         },
-        privateKey: process.env.SECRET_JWT_REFRESH_TOKEN as string
+        privateKey: ENV_CONFIG.SECRET_JWT_REFRESH_TOKEN as string
       })
     }
     return signToken({
@@ -55,9 +53,9 @@ class UserService {
         verify,
         token_type: TokenType.RefreshToken
       },
-      privateKey: process.env.SECRET_JWT_REFRESH_TOKEN as string,
+      privateKey: ENV_CONFIG.SECRET_JWT_REFRESH_TOKEN as string,
       options: {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN
+        expiresIn: ENV_CONFIG.REFRESH_TOKEN_EXPIRE_IN
       }
     })
   }
@@ -66,7 +64,7 @@ class UserService {
   }
   private decodeRefreshToken = (token: string) => {
     return verifyToken({
-      secretOrPublicKey: process.env.SECRET_JWT_REFRESH_TOKEN as string,
+      secretOrPublicKey: ENV_CONFIG.SECRET_JWT_REFRESH_TOKEN as string,
       token
     })
   }
@@ -77,9 +75,9 @@ class UserService {
         verify,
         token_type: TokenType.EmailVerifyToken
       },
-      privateKey: process.env.SECRET_JWT_EMAIL_VERIFY_TOKEN as string,
+      privateKey: ENV_CONFIG.SECRET_JWT_EMAIL_VERIFY_TOKEN as string,
       options: {
-        expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRE_IN
+        expiresIn: ENV_CONFIG.EMAIL_VERIFY_TOKEN_EXPIRE_IN
       }
     })
   }
@@ -90,18 +88,18 @@ class UserService {
         verify,
         token_type: TokenType.ForgotPasswordToken
       },
-      privateKey: process.env.SECRET_JWT_FORGOT_PASSWORD_TOKEN as string,
+      privateKey: ENV_CONFIG.SECRET_JWT_FORGOT_PASSWORD_TOKEN as string,
       options: {
-        expiresIn: process.env.FORGOT_PASSWORD_EXPIRE_IN
+        expiresIn: ENV_CONFIG.FORGOT_PASSWORD_EXPIRE_IN
       }
     })
   }
   private getOauthGoogleToken = async (code: string) => {
     const body = {
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      client_id: ENV_CONFIG.GOOGLE_CLIENT_ID,
+      client_secret: ENV_CONFIG.GOOGLE_CLIENT_SECRET,
+      redirect_uri: ENV_CONFIG.GOOGLE_REDIRECT_URI,
       grant_type: 'authorization_code'
     }
     const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
@@ -145,7 +143,7 @@ class UserService {
       username: `user${user_id.toString()}`,
       email_verify_token,
       date_of_birth: new Date(data.date_of_birth),
-      password: hashPassword(data.password + process.env.SECRET_PASSWORD)
+      password: hashPassword(data.password + ENV_CONFIG.SECRET_PASSWORD)
     })
     await dbService.users().insertOne(user)
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
@@ -320,7 +318,7 @@ class UserService {
       },
       {
         $set: {
-          password: hashPassword(password + process.env.SECRET_PASSWORD),
+          password: hashPassword(password + ENV_CONFIG.SECRET_PASSWORD),
           forgot_password_token: ''
         },
         $currentDate: {
@@ -455,7 +453,7 @@ class UserService {
       },
       {
         $set: {
-          password: hashPassword(password + process.env.SECRET_PASSWORD)
+          password: hashPassword(password + ENV_CONFIG.SECRET_PASSWORD)
         },
         $currentDate: {
           updated_at: true

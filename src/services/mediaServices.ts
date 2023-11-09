@@ -1,19 +1,16 @@
-import { config } from 'dotenv'
 import { Request } from 'express'
 import path from 'path'
 import sharp from 'sharp'
 import { isProduction } from '~/constants/config'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import { getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/utils/file'
-import fs from 'fs'
 import fsPromise from 'fs/promises'
 import { Media, MediaType } from '~/types'
 import queue from '~/utils/queue'
 import { uploadFileToS3 } from '~/utils/s3'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
 import mime from 'mime'
-
-config()
+import { ENV_CONFIG } from '~/constants/config'
 class MediaService {
   uploadImage = async (req: Request) => {
     const files = await handleUploadImage(req)
@@ -31,8 +28,8 @@ class MediaService {
         await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
         // return {
         //   url: isProduction
-        //     ? `${process.env.HOST}/api/static/image/${newFullFileName}`
-        //     : `http://localhost:${process.env.PORT}/api/static/image/${newFullFileName}`,
+        //     ? `${ENV_CONFIG.HOST}/api/static/image/${newFullFileName}`
+        //     : `http://localhost:${ENV_CONFIG.PORT}/api/static/image/${newFullFileName}`,
         //   type: MediaType.Image
         // }
         return {
@@ -59,8 +56,8 @@ class MediaService {
         }
         // return {
         //   url: isProduction
-        //     ? `${process.env.HOST}/api/static/video/${file.newFilename}`
-        //     : `http://localhost:${process.env.PORT}/api/static/video/${file.newFilename}`,
+        //     ? `${ENV_CONFIG.HOST}/api/static/video/${file.newFilename}`
+        //     : `http://localhost:${ENV_CONFIG.PORT}/api/static/video/${file.newFilename}`,
         //   type: MediaType.Video
         // }
       })
@@ -75,8 +72,8 @@ class MediaService {
         queue.enqueue(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/api/static/video-hls/${newName}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/api/static/video-hls/${newName}/master.m3u8`,
+            ? `${ENV_CONFIG.HOST}/api/static/video-hls/${newName}/master.m3u8`
+            : `http://localhost:${ENV_CONFIG.PORT}/api/static/video-hls/${newName}/master.m3u8`,
           type: MediaType.HLS
         }
       })

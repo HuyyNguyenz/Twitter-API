@@ -6,7 +6,6 @@ import dbService from '~/services/dbServices'
 import userService from '~/services/userServices'
 import validate from '~/utils/validation'
 import hashPassword from '~/utils/crypto'
-import { config } from 'dotenv'
 import { verifyToken } from '~/utils/jwt'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
@@ -16,8 +15,7 @@ import { TokenPayload } from '~/requestTypes'
 import { UserVerifyStatus } from '~/types'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
-
-config()
+import { ENV_CONFIG } from '~/constants/config'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -86,7 +84,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
       try {
         const decoded_forgot_password_token = await verifyToken({
           token: value,
-          secretOrPublicKey: process.env.SECRET_JWT_FORGOT_PASSWORD_TOKEN as string
+          secretOrPublicKey: ENV_CONFIG.SECRET_JWT_FORGOT_PASSWORD_TOKEN as string
         })
         const { user_id } = decoded_forgot_password_token
         const user = await dbService.users().findOne({ _id: new ObjectId(user_id) })
@@ -195,7 +193,7 @@ export const loginValidator = validate(
           options: async (value, { req }) => {
             const user = await dbService
               .users()
-              .findOne({ email: value, password: hashPassword(req.body.password + process.env.SECRET_PASSWORD) })
+              .findOne({ email: value, password: hashPassword(req.body.password + ENV_CONFIG.SECRET_PASSWORD) })
             if (user === null) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT,
@@ -278,7 +276,7 @@ export const refreshTokenValidator = validate(
             }
             try {
               const [decoded_refresh_token, refresh_token] = await Promise.all([
-                verifyToken({ token: value, secretOrPublicKey: process.env.SECRET_JWT_REFRESH_TOKEN as string }),
+                verifyToken({ token: value, secretOrPublicKey: ENV_CONFIG.SECRET_JWT_REFRESH_TOKEN as string }),
                 dbService.refreshTokens().findOne({ token: value })
               ])
               if (refresh_token === null) {
@@ -322,7 +320,7 @@ export const verifyEmailTokenValidator = validate(
             try {
               const decoded_email_verify_token = await verifyToken({
                 token: value,
-                secretOrPublicKey: process.env.SECRET_JWT_EMAIL_VERIFY_TOKEN as string
+                secretOrPublicKey: ENV_CONFIG.SECRET_JWT_EMAIL_VERIFY_TOKEN as string
               })
               ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
               return true
@@ -512,7 +510,7 @@ export const changePasswordValidator = validate(
             const user = await dbService.users().findOne({
               _id: new ObjectId(user_id)
             })
-            const isPasswordExisted = hashPassword(value + process.env.SECRET_PASSWORD) === user?.password
+            const isPasswordExisted = hashPassword(value + ENV_CONFIG.SECRET_PASSWORD) === user?.password
             if (!isPasswordExisted) {
               throw new Error(USER_MESSAGES.OLD_PASSWORD_NOT_MATCH)
             }

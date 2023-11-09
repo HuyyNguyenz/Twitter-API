@@ -9,11 +9,12 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { USER_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 import dbService from '~/services/dbServices'
+import { ENV_CONFIG } from '~/constants/config'
 
 const initialSocket = (httpServer: ServerHttp) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL as string
+      origin: ENV_CONFIG.CLIENT_URL as string
     }
   })
 

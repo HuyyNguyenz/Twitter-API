@@ -1,6 +1,5 @@
 import { MongoClient, Db, Collection } from 'mongodb'
 import User from '~/models/schemas/UserSchema'
-import { config } from 'dotenv'
 import RefreshToken from '~/models/schemas/RefreshTokenSchema'
 import Follower from '~/models/schemas/FollowerSchema'
 import VideoStatus from '~/models/schemas/VideoStatusSchema'
@@ -8,16 +7,16 @@ import Tweet from '~/models/schemas/TweetSchema'
 import Hashtag from '~/models/schemas/HashtagSchema'
 import Bookmark from '~/models/schemas/BookmarkSchema'
 import Conversation from '~/models/schemas/ConversationSchema'
+import { ENV_CONFIG } from '~/constants/config'
 
-config()
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@twitter.hx0adbn.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://${ENV_CONFIG.DB_USER}:${ENV_CONFIG.DB_PASSWORD}@twitter.hx0adbn.mongodb.net/?retryWrites=true&w=majority`
 
 class DbService {
   private client: MongoClient
   private db: Db
   constructor() {
     this.client = new MongoClient(uri)
-    this.db = this.client.db(process.env.DB_NAME)
+    this.db = this.client.db(ENV_CONFIG.DB_NAME)
   }
   connect = async () => {
     try {
