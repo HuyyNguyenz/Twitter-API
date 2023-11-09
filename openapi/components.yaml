@@ -1,0 +1,82 @@
+components:
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: nguyenhuydz3@gmail.com
+        password:
+          type: string
+          example: Aluhabaz3105@
+    SuccessAuthentication:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjUxN2RiZTVkYTgwOTQzNTE2YzYwMDk5IiwidmVyaWZ5IjoxLCJ0b2tlbl90eXBlIjowLCJpYXQiOjE2OTkzNDE3MjcsImV4cCI6MTY5OTM0MjYyN30.O3WKTVE7s8t3jlszav-DXyLdGtuoPUnpImFqYL1eFtU
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjUxN2RiZTVkYTgwOTQzNTE2YzYwMDk5IiwidmVyaWZ5IjoxLCJ0b2tlbl90eXBlIjoxLCJpYXQiOjE2OTkzNDE3MjcsImV4cCI6MTcwNzk4MTcyN30.Sx5kzkjDl_nb-a6eMV_SzSBd4it0QP1V79X0V1o5OvE
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 6517dbe5da80943516c60099
+        name:
+          type: string
+          example: Huyy Nguyenz
+        email:
+          type: string
+          format: email
+          example: nguyenhuydz3@gmail.com
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2023-08-21T07:16:53.062Z
+        created_at:
+          type: string
+          format: ISO8601
+          example: 2023-09-30T08:27:17.267Z
+        updated_at:
+          type: string
+          format: ISO8601
+          example: 2023-09-30T08:27:17.267Z
+        verify:
+          $ref: '#/components/schemas/UserVerifyStatus'
+        twitter_circle:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example: ['6517dbe5da80943516c60099', '6517dbe5da80943516c60081']
+        bio:
+          type: string
+          example: 'This is my bio'
+        location:
+          type: string
+          example: 'Binh Chanh district, Ho Chi Minh city'
+        website:
+          type: string
+          example: 'www.example.com.vn'
+        username:
+          type: string
+          readOnly: true
+          example: 'user6517dbe5da80943516c60099'
+        avatar:
+          type: string
+          example: 'http:localhost:4000/images/avatars/huyz.jpg'
+        cover_photo:
+          type: string
+          example: 'http:localhost:4000/images/cover_photos/huyz.jpg'
+    UserVerifyStatus:
+      type: number
+      enum: ['Unverified', 'Verified', 'Banned']
+      example: 1
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

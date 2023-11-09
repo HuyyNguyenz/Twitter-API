@@ -38,10 +38,36 @@ import wrapRequestHandler from '~/utils/handlers'
 
 const userRouter = Router()
 /**
- * Description: Login user
- * Path: /login
- * Method: POST
- * Body: { email: string, password:string }
+ * @swagger
+ * /user/login:
+ *   post:
+ *     tags:
+ *       - user
+ *     summary: Login
+ *     description: Login user account
+ *     operationId: login
+ *     requestBody:
+ *       description: Fill login form
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginBody'
+ *     responses:
+ *       '200':
+ *         description: Login success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 result:
+ *                   $ref: '#/components/schemas/SuccessAuthentication'
+ *       '422':
+ *         description: Invalid input
  */
 userRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 

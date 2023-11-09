@@ -2,6 +2,90 @@ import { JwtPayload } from 'jsonwebtoken'
 import { Media, TokenType, TweetAudience, TweetType, UserVerifyStatus } from '~/types'
 import { ParamsDictionary, Query } from 'express-serve-static-core'
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LoginBody:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           example: nguyenhuydz3@gmail.com
+ *         password:
+ *           type: string
+ *           example: Aluhabaz3105@
+ *     SuccessAuthentication:
+ *       type: object
+ *       properties:
+ *         access_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTY5MTQ2OTYyNn0.HTLX20cB7_z0c9c8FDg3MIx6RJEELHHlmJNZa94ku-o
+ *         refresh_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTcwMDAyMzIyNn0.bFnaBfxWl-Q48HCwAeMpNzZwTO9LEjcBd7Zyipjqr64
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           format: MongoId
+ *           example: 6517dbe5da80943516c60099
+ *         name:
+ *           type: string
+ *           example: Huyy Nguyenz
+ *         email:
+ *           type: string
+ *           example: nguyenhuydz3@gmail.com
+ *         date_of_birth:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2023-08-21T07:16:53.062Z
+ *         created_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2023-09-30T08:27:17.267Z
+ *         updated_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2023-09-30T08:27:17.267Z
+ *         verify:
+ *           $ref: '#/components/schemas/UserVerifyStatus'
+ *         twitter_circle:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: MongoId
+ *           example: ['6517dbe5da80943516c60099', '6517dbe5da80943516c60081']
+ *         bio:
+ *           type: string
+ *           example: 'This is my bio'
+ *         location:
+ *           type: string
+ *           example: 'Binh Chanh district, Ho Chi Minh city'
+ *         website:
+ *           type: string
+ *           example: 'www.example.com'
+ *         username:
+ *           type: string
+ *           example: 'user6517dbe5da80943516c60099'
+ *         avatar:
+ *           type: string
+ *           example: 'http:localhost:4000/images/avatars/huyz.jpg'
+ *         cover_photo:
+ *           type: string
+ *           example: 'http:localhost:4000/images/avatars/huyz.jpg'
+ *     UserVerifyStatus:
+ *       type: number
+ *       enum: [Unverified, Verified, Banned]
+ *       example: 1
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
 export interface LoginReqBody {
   email: string
   password: string
