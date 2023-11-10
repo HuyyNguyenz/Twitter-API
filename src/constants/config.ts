@@ -1,9 +1,26 @@
 import { config } from 'dotenv'
-import argv from 'minimist'
+import path from 'path'
+import fs from 'fs'
 
-config()
+const env = process.env.NODE_ENV
+const envFileName = `.env.${env}`
 
-export const isProduction = Boolean(argv(process.argv.slice(2)).production)
+if (!env) {
+  console.log(`Bạn chưa cung cấp biến môi trường NODE_ENV (ví dụ: development, production)`)
+  console.log(`Phát hiện NODE_ENV = ${env}`)
+  process.exit(1)
+}
+console.log(`Phát hiện NODE_ENV = ${env}, vì thế app sẽ dùng file môi trường là ${envFileName}`)
+if (!fs.existsSync(path.resolve(envFileName))) {
+  console.log(`Không tìm thấy file môi trường ${envFileName}`)
+  console.log(`Lưu ý: App không dùng file .env, ví dụ môi trường là development thì app sẽ dùng file .env.development`)
+  console.log(`Vui lòng tạo file ${envFileName} và tham khảo nội dung ở file .env.example`)
+  process.exit(1)
+}
+config({
+  path: envFileName
+})
+export const isProduction = Boolean(process.env.NODE_ENV === 'production')
 
 export const ENV_CONFIG = {
   DB_NAME: process.env.DB_NAME as string,
