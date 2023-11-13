@@ -20,22 +20,22 @@ class MediaService {
         const newFullFileName = `${newName}.jpg`
         const newPath = path.resolve(UPLOAD_IMAGE_DIR, newFullFileName)
         await sharp(file.filepath).jpeg().toFile(newPath)
-        const s3Result = await uploadFileToS3({
-          fileName: 'images/' + newFullFileName,
-          filePath: newPath,
-          contentType: mime.getType(newPath) as string
-        })
-        await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
-        // return {
-        //   url: isProduction
-        //     ? `${ENV_CONFIG.HOST}/api/static/image/${newFullFileName}`
-        //     : `http://localhost:${ENV_CONFIG.PORT}/api/static/image/${newFullFileName}`,
-        //   type: MediaType.Image
-        // }
+        // const s3Result = await uploadFileToS3({
+        //   fileName: 'images/' + newFullFileName,
+        //   filePath: newPath,
+        //   contentType: mime.getType(newPath) as string
+        // })
+        // await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
         return {
-          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          url: isProduction
+            ? `${ENV_CONFIG.HOST}/api/static/image/${newFullFileName}`
+            : `http://localhost:${ENV_CONFIG.PORT}/api/static/image/${newFullFileName}`,
           type: MediaType.Image
         }
+        // return {
+        //   url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+        //   type: MediaType.Image
+        // }
       })
     )
     return result
